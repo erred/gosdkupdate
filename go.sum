@@ -1,0 +1,4 @@
+go.seankhliao.com/goreleases v0.0.0-20220601102107-1df20597112d h1:Kecm7nOKsa1IiYBM33zq4hf0EZK2RBwkaZVjVhi/WEI=
+go.seankhliao.com/goreleases v0.0.0-20220601102107-1df20597112d/go.mod h1:Gtbc/RIgYyE/6mKojfBEI2nPYqXXeZXF29gHHdFy6is=
+golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf h1:oXVg4h2qJDd9htKxb5SCpFBHLipW6hXmL3qpUixS2jw=
+golang.org/x/exp v0.0.0-20220518171630-0b5c67f07fdf/go.mod h1:yh0Ynu2b5ZUe3MQfp2nM0ecK7wsgouWTDN0FNeJuIys=
