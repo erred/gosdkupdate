@@ -17,7 +17,6 @@ import (
 
 	"go.seankhliao.com/goreleases"
 	"golang.org/x/exp/maps"
-	"golang.org/x/sync/semaphore"
 )
 
 func main() {
@@ -133,14 +132,14 @@ func main() {
 		envs = append(envs, s)
 	}
 
-	sem := semaphore.NewWeighted(int64(parallel))
+        sem := make(chan struct{}, parallel)
 
 	var wg sync.WaitGroup
 	for ver := range toKeep {
-		sem.Acquire(context.Background(), 1)
+	        sem <- struct{}{}
 		wg.Add(1)
 		go func(ver string) {
-			sem.Release(1)
+			defer func(){<-sem}()
 			defer wg.Done()
 			args := []string{"install", fmt.Sprintf("golang.org/dl/%v@latest", ver)}
 			fmt.Println(bootStrapGo, args)
