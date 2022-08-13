@@ -17,13 +17,15 @@ import (
 
 	"go.seankhliao.com/goreleases"
 	"golang.org/x/exp/maps"
+	"golang.org/x/sync/semaphore"
 )
 
 func main() {
-	var minMinor int
+	var minMinor, parallel int
 	var bootStrapGo string
 	flag.IntVar(&minMinor, "min-minor", 11, "earliest minor version to keep")
 	flag.StringVar(&bootStrapGo, "bootstrap-go", "/usr/bin/go", "path to `go` for installing versions")
+	flag.IntVar(&parallel, "parallel", 3, "parallel downloads")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -72,10 +74,10 @@ func main() {
 		log.Fatalln("read", homeSdk, err)
 	}
 	for _, sdk := range installedSdks {
-	        // ignore non go* directories, eg x/ repos
-	        if !strings.HasPrefix(sdk.Name(), "go") {
-	                continue
-	        }
+		// ignore non go* directories, eg x/ repos
+		if !strings.HasPrefix(sdk.Name(), "go") {
+			continue
+		}
 		_, ok := toKeep[sdk.Name()]
 		if !ok {
 			sdkPath := path.Join(homeSdk, sdk.Name())
@@ -131,10 +133,14 @@ func main() {
 		envs = append(envs, s)
 	}
 
+	sem := semaphore.NewWeighted(int64(parallel))
+
 	var wg sync.WaitGroup
 	for ver := range toKeep {
+		sem.Acquire(context.Background(), 1)
 		wg.Add(1)
 		go func(ver string) {
+			sem.Release(1)
 			defer wg.Done()
 			args := []string{"install", fmt.Sprintf("golang.org/dl/%v@latest", ver)}
 			fmt.Println(bootStrapGo, args)
@@ -174,10 +180,10 @@ func compVersion(a, b goreleases.Version) goreleases.Version {
 	if rel != nil {
 		return *rel
 	}
-	if arc + abeta == 0 {
-	        return a
-	} else if brc + bbeta == 0 {
-	        return b
+	if arc+abeta == 0 {
+		return a
+	} else if brc+bbeta == 0 {
+		return b
 	}
 	rel = compab(a, b, arc, brc)
 	if rel != nil {
