@@ -72,6 +72,10 @@ func main() {
 		log.Fatalln("read", homeSdk, err)
 	}
 	for _, sdk := range installedSdks {
+	        // ignore non go* directories, eg x/ repos
+	        if !strings.HasPrefix(sdk.Name(), "go") {
+	                continue
+	        }
 		_, ok := toKeep[sdk.Name()]
 		if !ok {
 			sdkPath := path.Join(homeSdk, sdk.Name())
@@ -169,6 +173,11 @@ func compVersion(a, b goreleases.Version) goreleases.Version {
 	rel = compab(a, b, apatch, bpatch)
 	if rel != nil {
 		return *rel
+	}
+	if arc + abeta == 0 {
+	        return a
+	} else if brc + bbeta == 0 {
+	        return b
 	}
 	rel = compab(a, b, arc, brc)
 	if rel != nil {
