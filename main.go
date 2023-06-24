@@ -132,14 +132,14 @@ func main() {
 		envs = append(envs, s)
 	}
 
-        sem := make(chan struct{}, parallel)
+	sem := make(chan struct{}, parallel)
 
 	var wg sync.WaitGroup
 	for ver := range toKeep {
-	        sem <- struct{}{}
+		sem <- struct{}{}
 		wg.Add(1)
 		go func(ver string) {
-			defer func(){<-sem}()
+			defer func() { <-sem }()
 			defer wg.Done()
 			args := []string{"install", fmt.Sprintf("golang.org/dl/%v@latest", ver)}
 			fmt.Println(bootStrapGo, args)
