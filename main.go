@@ -16,7 +16,6 @@ import (
 	"syscall"
 
 	"go.seankhliao.com/goreleases"
-	"golang.org/x/exp/maps"
 )
 
 func main() {
@@ -61,7 +60,7 @@ func main() {
 		}
 		toKeep[string(rel)] = struct{}{}
 	}
-	fmt.Println("keeping sdks:", maps.Keys(toKeep))
+	fmt.Println("keeping sdks:", toKeep)
 
 	home, err := os.UserHomeDir()
 	if err != nil {
